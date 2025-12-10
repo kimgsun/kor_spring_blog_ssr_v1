@@ -1,7 +1,6 @@
 package org.example.demo_ssr_v1_1.board;
 
 import lombok.Data;
-import org.hibernate.sql.exec.spi.StandardEntityInstanceResolver;
 
 // 정적 내부 클래스 활용
 // 컨트롤러와 비즈니스 로직 사이에서 데이터를 전송하는 객체

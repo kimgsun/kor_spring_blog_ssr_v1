@@ -40,16 +40,17 @@ public class BoardPersistRepository {
 
     // 수정
     @Transactional
-    public Board updateById(Long id, BoardRequest.UpdateDTO req) {
+    public Board updateById(Long id, BoardRequest.UpdateDTO reqDTO) {
         Board board = entityManager.find(Board.class, id);
 
         if (board == null) {
             throw new IllegalArgumentException("수정할 게시글을 찾을 수 없습니다.");
         }
 
-        board.setTitle(req.getTitle());
-        board.setContent(req.getContent());
-        board.setUsername(req.getUsername());
+//        board.setTitle(req.getTitle());
+//        board.setContent(req.getContent());
+//        board.setUsername(req.getUsername());
+        board.update(reqDTO);
 
         // 더티 체킹
         // 1. 개발자가 직접 update 쿼리를 작성 안해도 된다
@@ -61,4 +62,12 @@ public class BoardPersistRepository {
     }
 
     // 삭제
+    @Transactional
+    public void deleteById(Long id) {
+        Board board = entityManager.find(Board.class, id);
+        if (board == null) {
+            throw new IllegalArgumentException("삭제할 게시글이 없습니다.");
+        }
+        entityManager.remove(board);
+    }
 }
