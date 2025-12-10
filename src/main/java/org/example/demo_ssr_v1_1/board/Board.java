@@ -32,9 +32,8 @@ public class Board {
 
     // Board 상태값 수정하는 로직
     public void update(BoardRequest.UpdateDTO updateDTO) {
-        // 유효성 겁사 처리
+        // 유효성 검사 처리
         updateDTO.validate();
-
         this.title = updateDTO.getTitle();
         this.content = updateDTO.getContent();
         this.username = updateDTO.getUsername();
@@ -42,18 +41,20 @@ public class Board {
 
     // 개별 필드 수정 - title
     public void updateTitle(String newTitle) {
-        // 방어적 코드
-        if (newTitle == null || newTitle.trim().isEmpty()) {
-            throw new IllegalArgumentException("제목은 필수입니다.");
+        if(newTitle == null || newTitle.trim().isEmpty()) {
+            throw new IllegalArgumentException("제목은 필수 입니다");
         }
         this.title = newTitle;
     }
 
     // 개별 필드 수정 - content
     public void updateContent(String newContent) {
-        if (newContent == null || newContent.trim().isEmpty()) {
-            throw new IllegalArgumentException("제목은 필수입니다.");
+        if(newContent == null || newContent.trim().isEmpty()) {
+            throw new IllegalArgumentException("내용은 필수 입니다");
         }
-        this.content = newContent;
+        this.content = content;
     }
+
+
+
 }

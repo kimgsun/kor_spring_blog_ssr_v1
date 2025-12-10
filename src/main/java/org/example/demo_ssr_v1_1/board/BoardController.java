@@ -1,5 +1,6 @@
 package org.example.demo_ssr_v1_1.board;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,46 +12,41 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+
 @RequiredArgsConstructor // DI
 @Controller // IoC
 public class BoardController {
 
     private final BoardPersistRepository repository;
 
-    // 게시글 수정 폼 페이지 요청 (화면 요청)
+    // 게시글 수정 폼 페이지 요청
     // http://localhost:8080/board/1/update
     @GetMapping("/board/{id}/update")
-    public String updateForm(@PathVariable Long id, Model model) {
+    public String updateForm(@PathVariable Long id,Model model) {
 
-        Board board = repository.findById(id);
-        if (board == null) {
-            throw new RuntimeException("수정할 게시글을 찾을 수 없습니다.");
-        }
-
-        model.addAttribute("board", board);
-
-        // HttpServletRequest req 로 할 시
-        // req.setAttribute("board", board); 도 가능
-
-        return "board/update-form";
+       Board board =  repository.findById(id);
+       if(board == null) {
+           throw new RuntimeException("수정할 게시글을 찾을 수 없어요");
+       }
+       model.addAttribute("board", board);
+       return "board/update-form";
     }
 
-    // 게시글 수정 요청 (기능 요청)
+    // 게시글 수정 요청 (기능요청)
     // http://localhost:8080/board/1/update
     @PostMapping("/board/{id}/update")
-    public String updateProc(@PathVariable Long id, BoardRequest.UpdateDTO updateDTO) {
+    public String updateProc(@PathVariable Long id,
+                             BoardRequest.UpdateDTO updateDTO) {
         try {
             repository.updateById(id, updateDTO);
-        } catch (Exception e) {
             // 더티 체킹 활용
+        } catch (Exception e) {
             throw new RuntimeException("게시글 수정 실패");
         }
-
         return "redirect:/board/list";
     }
-
+    
     // 게시글 목록 요청
-    // http://localhost:8080/board/list
     @GetMapping({"/board/list", "/"})
     public String boardList(Model model) {
         List<Board> boardList = repository.findAll();
@@ -61,24 +57,23 @@ public class BoardController {
     // 게시글 저장 화면 요청
     // http://localhost:8080/board/save
     @GetMapping("/board/save")
-    public String saveForm() {
-        return "/board/save-form";
+    public String saveFrom() {
+        return "board/save-form";
     }
 
     // 게시글 저장 요청 (기능 요청)
     // http://localhost:8080/board/save
+    //
     @PostMapping("/board/save")
     public String saveProc(BoardRequest.SaveDTO saveDTO) {
         // HTTP 요청 : username=값&title=값&content=값
-        // 스프링이 처리 : new SaveDTO(), setter 메서드 호출해서 값을 넣어줌
+        // 스프링이 처리 : new SaveDTO(), setter 메서드 호출해서 값을 쏙 ~ 넣어줌
         Board board = saveDTO.toEntity();
         repository.save(board);
-
         return "redirect:/";
     }
 
-    // 삭제
-    // @DeleteMapping 이지만 form 태그 활용 없음 get, post (fetch 함수 활용)
+    // 삭제 @DeleteMapping 이지만 form 태그 활용 없음 get, post (fetch 함수 활용)
     @PostMapping("/board/{id}/delete")
     public String delete(@PathVariable Long id) {
         repository.deleteById(id);
@@ -87,16 +82,19 @@ public class BoardController {
 
     // 상세보기 화면
     // http://localhost:8080/board/1
-    @GetMapping("/board/{id}")
+    @GetMapping("board/{id}")
     public String detail(@PathVariable Long id, Model model) {
-        Board board = repository.findById(id);
 
-        if (board == null) {
-            // 404 not found
-            throw new RuntimeException("게시글을 찾을 수 없습니다.: " + id);
+        Board board = repository.findById(id);
+        if(board == null) {
+            // 404
+            throw new RuntimeException("게시글을 찾을 수 없어요 : " + id);
         }
 
         model.addAttribute("board", board);
+
         return "board/detail";
     }
+
+
 }

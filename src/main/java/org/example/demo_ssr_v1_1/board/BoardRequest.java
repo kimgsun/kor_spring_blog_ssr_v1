@@ -16,6 +16,7 @@ public class BoardRequest {
         public Board toEntity() {
             return new Board(title, content, username);
         }
+
     }
 
     @Data
@@ -25,14 +26,16 @@ public class BoardRequest {
         private String username;
 
         // 검증 메서드
-        public void validate() {
-            if (title == null || title.trim().isEmpty()) {
-                throw new IllegalArgumentException("제목은 필수입니다.");
+        public void  validate() {
+            if(title == null || title.trim().isEmpty()) {
+                throw new IllegalArgumentException("제목은 필수 입니다");
             }
 
-            if (content == null || content.trim().isEmpty()) {
-                throw new IllegalArgumentException("내용은 필수입니다.");
+            if(content == null || content.trim().isEmpty()) {
+                throw new IllegalArgumentException("내용은 필수 입니다");
             }
         }
+
     }
+
 }
