@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 
+// 엔티티 화면 보고 설계해 보세요.
 @NoArgsConstructor
 @Data
 @Table(name = "user_tb")
@@ -36,14 +37,18 @@ public class User {
     }
 
     // 회원정보 수정 비즈니스 로직 추가
-    // - Long id, String username, String password 등 다 치기 힘드니까 추후 DTO 설계
+    // 추후 DTO  설계
     public void update(UserRequest.UpdateDTO updateDTO) {
-        // 유효성 검사: 검사는 validate에서 진행 -> 검사에 걸리면 밑으로 내려오지 않음
+        // 유효성 검사
         updateDTO.validate();
-
         this.password = updateDTO.getPassword();
-
         // 더티 체킹 (변경 감지)
         // 트랜잭션이 끝나면 자동으로 update 쿼리 진행
     }
+
+    // 회원 정보 소유자 확인 로직
+    public boolean isOwner(Long userId) {
+        return this.id.equals(userId);
+    }
+
 }

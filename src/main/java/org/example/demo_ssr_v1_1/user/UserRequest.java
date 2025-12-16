@@ -4,20 +4,20 @@ import lombok.Data;
 
 public class UserRequest {
 
-    @Data // 내부가 private 이기 때문에 외부에서 쓰기 위해
+    @Data
     public static class LoginDTO {
         private String username;
         private String password;
 
         public void validate() {
-            if (username == null || username.trim().isEmpty()) {
-                throw new IllegalArgumentException("사용자명을 입력해주세요.");
+            if(username == null  || username.trim().isEmpty()) {
+                throw new IllegalArgumentException("사용자명을 입력해주세요");
             }
-
-            if (password == null || password.trim().isEmpty()) {
-                throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+            if(password == null || password.trim().isEmpty()) {
+                throw new IllegalArgumentException("비밀번호를 입력해주세요");
             }
         }
+
     } // end of inner class
 
     @Data
@@ -25,26 +25,23 @@ public class UserRequest {
         private String username;
         private String password;
         private String email;
-
+        
         public void validate() {
-            if (username == null || username.trim().isEmpty()) {
-                throw new IllegalArgumentException("사용자명을 입력해주세요.");
+            if(username == null  || username.trim().isEmpty()) {
+                throw new IllegalArgumentException("사용자명을 입력해주세요");
             }
-
-            if (password == null || password.trim().isEmpty()) {
-                throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+            if(password == null || password.trim().isEmpty()) {
+                throw new IllegalArgumentException("비밀번호를 입력해주세요");
             }
-
-            if (email == null || email.trim().isEmpty()) {
-                throw new IllegalArgumentException("이메일을 입력해주세요.");
+            if(email == null || email.trim().isEmpty()) {
+                throw new IllegalArgumentException("이메일을 입력해주세요");
             }
-
-            if (email.contains("@") == false) {
-                throw new IllegalArgumentException("올바른 이메일 형식이 아닙니다.");
+            if(email.contains("@") == false) {
+                throw new IllegalArgumentException("올바른 이메일 형식이 아닙니다");
             }
         }
 
-        // JOINDTO 를 User 타입으로 변환 시키는 기능
+        // JoinDTO 를 User 타입으로 변환 시키는 기능
         public User toEntity() {
             return User.builder()
                     .username(this.username)
@@ -52,22 +49,21 @@ public class UserRequest {
                     .email(this.email)
                     .build();
         }
-    } // end of inner class
+
+    }  // end of inner clsss
 
     @Data
     public static class UpdateDTO {
-        // username 은 제외: 변경 불가능한 고유 식별자
         private String password;
+        // username 은 제외: 변경 불가는한 고유 식별자
 
         public void validate() {
-            if (password == null || password.trim().isEmpty()) {
-                throw new IllegalArgumentException("비밀번호를 입력해주세요.");
+            if(password == null || password.trim().isEmpty()) {
+                throw new IllegalArgumentException("비밀번호를 입력해주세요");
             }
-
-            if (password.length() <= 4) {
-                throw new IllegalArgumentException("비밀번호는 4글자 이상이어야 합니다.");
+            if(password.length() < 4) {
+                throw new IllegalArgumentException("비밀번호는 4글자 이상이어야 합니다");
             }
         }
     }
-
 }
