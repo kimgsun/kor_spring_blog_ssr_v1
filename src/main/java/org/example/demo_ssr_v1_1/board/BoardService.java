@@ -3,6 +3,7 @@ package org.example.demo_ssr_v1_1.board;
 import lombok.RequiredArgsConstructor;
 import org.example.demo_ssr_v1_1._core.errors.exception.Exception403;
 import org.example.demo_ssr_v1_1._core.errors.exception.Exception404;
+import org.example.demo_ssr_v1_1.reply.ReplyRepository;
 import org.example.demo_ssr_v1_1.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,39 +23,40 @@ import java.util.stream.Collectors;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final ReplyRepository replyRepository;
 
     /**
-     * 게시글 목록 페이징 추가
+     * 게시글 목록 조회 (페이징 처리)
      * 트랜잭션
      *  - 읽기 전용 트랜잭션 - 성능 최적화
      * @return 게시글 목록 (생성일 기준으로 내림차순)
      */
-    public BoardResponse.PageDTO 게시글목록조회(int page, int size) {
-        // page 는 0부터 시작
-        // 상한선 제한
-        // size 는 기본값 5, 최소 1, 최대 50 제한
+    public BoardResponse.PageDTO 게시글목록조회(int page, int size, String keyword) {
+
+        //** 상한선 제한 **
+        // size 는 기본값 5, 최소 1, 최대 50으로 제한
         // 페이지 번호가 음수가 되는 것을 막습니다.
         int validPage = Math.max(0, page); // 양수값 보장
-
-        // 최대값 제한       // 최대값 제한 50으로 보장
-        // 최소값 제한       // 최소값 제한 1로 보장
+        // 최대값 제한    // 최대값 제한 50으로 보장
+        // 최소값 제한    //  1 , -50 (양수값 보장) 최소값
         int validSize = Math.max(1, Math.min(50, size));
 
-        // 정렬 기준
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        // 정렬기준
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt" );
         Pageable pageable = PageRequest.of(validPage, validSize, sort);
+        // [ ..스프링...  ]  [검색][초기화]
 
-        // Page<Board>
-        Page<Board> boardPage = boardRepository.findAllWithUserOrderByCreatedAtDesc(pageable);
-        // new Page(page1);
+        Page<Board> boardPage;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            boardPage = boardRepository.findByTitleContainingOrContentContaining(keyword.trim(), pageable);
+        } else {
+            boardPage = boardRepository.findAllWithUserOrderByCreatedAtDesc(pageable);
+        }
 
-        // 자바문법
-        // 데이터 타입을 변환 해서 맞춰 주어야 한다.
+
         return new BoardResponse.PageDTO(boardPage);
-//        return boardList.stream()
-//                .map(BoardResponse.ListDTO::new)
-//                .collect(Collectors.toList());
     }
+
 
 //    /**
 //     * 게시글 목록 조회
@@ -149,9 +151,10 @@ public class BoardService {
        if(!boardEntity.isOwner(sessionUserId)) {
            throw new Exception403("삭제 권한이 없습니다");
        }
+       // 게시글 삭제 시 제약 오류 발생 하기 때문에 댓글 부터 삭제 후 게시글 삭제 처리 해야 함
+       replyRepository.deleteByBoardId(boardId);
        // 4
        boardRepository.deleteById(boardId);
     }
-
 
 }
